@@ -31,7 +31,7 @@ def apriltag_video(input_streams=['../media/input/single_tag.mp4', '../media/inp
     Either install the DLL in the appropriate system-wide
     location, or specify your own search paths as needed.
     '''
-
+    
     detector = apriltag.Detector(options, searchpath=apriltag._get_dll_path())
 
     for stream in input_streams:
@@ -55,15 +55,15 @@ def apriltag_video(input_streams=['../media/input/single_tag.mp4', '../media/inp
         while(video.isOpened()):
 
             success, frame = video.read()
+            
             if not success:
                 break
-
+            
             result, overlay = apriltag.detect_tags(frame,
                                                    detector,
                                                    camera_params=(3156.71852, 3129.52243, 359.097908, 239.736909),
-                                                   tag_size=0.0762,
+                                                   tag_size=0.206375,
                                                    vizualization=3,
-                                                   verbose=3,
                                                    annotation=True
                                                   )
             if output_stream:
@@ -73,8 +73,11 @@ def apriltag_video(input_streams=['../media/input/single_tag.mp4', '../media/inp
                 cv2.imshow(detection_window_name, overlay)
                 if cv2.waitKey(1) & 0xFF == ord(' '): # Press space bar to terminate
                     break
+            # cv2.imshow("frame_test", frame)
+            yield result
 
 ################################################################################
 
 if __name__ == '__main__':
-    apriltag_video()
+    for res in apriltag_video([0]):
+        print(res)
